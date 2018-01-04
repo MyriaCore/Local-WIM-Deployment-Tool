@@ -1,16 +1,9 @@
+:: It's dangerous to go alone. Take this.
+:: https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/dism-image-management-command-line-options-s14
+
+
 @echo off
 setlocal enabledelayedexpansion
-
-::TODO =============
-::Info:
-::Figure out how to make a wim into esd(need export?)
-::Figure out how multiple images work in regard to the windows installer.
-
-::Scripts
-::Figure out how to split a string by space, but respect quotes.
-::(maybe split my quotes then split every other one by spaces?)
-
-
 
 ::Print Welcome Instructions
 echo Welcome to the WespenJagerWindows Deployment Tool.
@@ -63,7 +56,7 @@ goto Index
 	::M80b80, you really ought to have kept those checks in here... all hell will break if you try and fire this off wrong.
 
 	dism /Capture-Image /ImageFile:%workspaceroot%\%command2%.wim /CaptureDir:%command1%\ /Name:%command2% /Compress:max /CheckIntegrity /Verify
-	
+
 	goto Main
 
 :Build
@@ -76,17 +69,17 @@ goto Index
 			)
 		)
 	)
-	
+
 	if "%command !count!"
-	
-	
+
+
 	if %count%+1 equ 1 (
-		
+
 		dism /Export-Image /SourceImageFile:                /DestinationImageFile:             /Compress:recovery
-		
-		
+
+
 	)
-	
+
 goto Main
 
 
@@ -111,7 +104,7 @@ goto Main
         set buildcount+=1
     )
 goto Main
-::goto :eof should end up *hopefully 
+::goto :eof should end up *hopefully
 
 ::Setup Help
 :Help
