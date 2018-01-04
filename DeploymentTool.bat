@@ -4,17 +4,18 @@ setlocal enabledelayedexpansion
 ::Print Welcome Instructions
 echo Welcome to the WespenJagerWindows Deployment Tool.
 
+goto Main
+
 :: setup workspace
 echo Enter the workspace directory. Usage: C:\MyWorkspaceDirectory
 set /p workspaceroot="Workspace Directory: "
-goto Index 
+goto Index
 
-goto Main
 
 
 ::Setup Main Loop
 :Main
-	set /p command="Deployment Tool: "
+	set /p command="Deployment Tool> "
 	cls
 	set /a count=0
 	for %%i in (%command%) do (
@@ -23,29 +24,38 @@ goto Main
 	)
 
 	::Handle commands
-	if %command0%==help (
+	if /I "%command0%"=="Help" (
 		if not defined command1 (
 			goto Help
 		)
 		goto Help%command1%
-	) 
-	if /I not "%command0%"=="Capture" if /I not "%command0%"=="Build" if /I not "%command0%"=="Export" if /I not "%command0%"=="Exit" (
-		echo Unknown command. Type help for help.
-		pause
-		goto Main
 	)
+	if /I "%command0%"=="Capture" (
+	    goto Capture
+    )
+    if /I "%command0%"=="Build" (
+        goto Capture
+    )
+    if /I "%command0%"=="Export" (
+        goto Capture
+    )
+    if /I "%command0%"=="Exit" (
+        exit /b
+    )
+    echo Unknown command. Type 'help' for help.
+    goto Main
 
 :Capture
 	::Set high-performance power scheme to speed deployment
 	if /I "%command3%"=="/h" (call powercfg /s 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c)
-	
+
+	::M80b80, you really ought to have kept those checks in here... all hell will break if you try and fire this off wrong.
+
 	dism /Capture-Image /ImageFile:%workspaceroot%\%command2%.wim /CaptureDir:%command1%\ /Name:%command2% /Compress:max /CheckIntegrity /Verify
 	
 	goto Main
 
-
 :Build
-	
 	for %%i in (%command%) do (
 		if /I not "%%i"=="%command0%" if /I not "%%i"=="%command1%" (
 			for %%j in imagenamearray[] do (
@@ -66,30 +76,30 @@ goto Main
 		
 	)
 	
-goto :Main
+goto Main
 
 
 :Export
-	echo export
-goto :Main
+	echo "Beginning to export to drive: %command1%"
+	copy "%~dp0/Builds/%command2%.esd" "%command1%\sources\install.esd" /Y /B
+    echo "Export complete, install.esd was replaced!"
+goto Main
 
 :Index
 	set imagecount=0
 	set buildcount=0
-	if exist %workspaceroot% (
-	
-		for /R "%workspaceroot%\" %%g in (*.wim) do (
-			set imagenamearray[%imagecount%]=%%g
-			set imagecount+=1
-		)
-	
-		for /R "%workspaceroot%\" %%g in (*.esd) do (
-			set buildnamearray[%buildcount%]=%%g
-			set buildcount+=1
-		)
-	) 
-	else (mkdir %workspaceroot%)
-goto :eof
+	mkdir %workspaceroot%
+
+	for /R "%workspaceroot%\" %%g in (*.wim) do (
+        set imagenamearray[%imagecount%]=%%g
+        set imagecount+=1
+	)
+
+    for /R "%workspaceroot%\" %%g in (*.esd) do (
+        set buildnamearray[%buildcount%]=%%g
+        set buildcount+=1
+    )
+goto Main
 ::goto :eof should end up *hopefully 
 
 ::Setup Help
@@ -103,7 +113,7 @@ goto :eof
 	echo exit                            ^| Exits the Deployment Tool.
 	echo help [command]                  ^| Shows detailed help.
 	echo ----------------------------------
-goto :Main
+goto Main
 
 :HelpCapture
 	echo ----------------------------------
@@ -113,7 +123,7 @@ goto :Main
 	echo name: The name to give the captured image.
 	echo /h: Use high performance mode to create the image faster.
 	echo ----------------------------------
-goto :Main
+goto Main
 
 :HelpBuild
 	echo ----------------------------------
@@ -123,7 +133,7 @@ goto :Main
 	echo names...: A list of image names to add to the build, or blank to build all.
 	echo /h: Use high performance mode to create the image faster.
 	echo ----------------------------------
-goto :Main
+goto Main
 
 :HelpExport
 	echo ----------------------------------
@@ -133,6 +143,3 @@ goto :Main
 	echo buildName: The name of the build to export.
 	echo ----------------------------------
 goto Main
-
-:Exit
-	exit /b
