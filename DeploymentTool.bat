@@ -1,6 +1,17 @@
 @echo off
 setlocal enabledelayedexpansion
 
+::TODO =============
+::Info:
+::Figure out how to make a wim into esd(need export?)
+::Figure out how multiple images work in regard to the windows installer.
+
+::Scripts
+::Figure out how to split a string by space, but respect quotes.
+::(maybe split my quotes then split every other one by spaces?)
+
+
+
 ::Print Welcome Instructions
 echo Welcome to the WespenJagerWindows Deployment Tool.
 
