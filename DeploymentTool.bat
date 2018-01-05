@@ -19,10 +19,12 @@ setlocal enabledelayedexpansion
 ::Implementation:
 ::Figure out how to split a string by space, but respect quotes.
 ::(maybe split my quotes then split every other one by spaces?)
-::Finish the Build Command (figure out how to use new indexing system)
+::Finish and Test Build Command (figure out how to use new indexing system)
 ::Check To make sure Capture Command works
-::Finish the Export Command
-::Review Help Commands to ensure it reflects new commands/arguments
+::Test Export Command
+::Make Help Commands more clear:
+::	User may not necessarily know that "Build" == *.esd, and "Image" == *.wim, and that "Volume" == A specific volume pertaining to the Capture Dir, Install Disk Dir, etc.
+::Rethink Index Label (You seem to have just used the weird dp0 thingy, so I'm just gonna comment out Index and go w/ that)
 ::Cry because we're using batch
 ::Write some nice things in the README.md file :D
 
@@ -30,13 +32,13 @@ setlocal enabledelayedexpansion
 
 ::Print Welcome Instructions
 echo Welcome to the WespenJagerWindows Deployment Tool.
-
+echo "Type 'help' for help, or 'help [command]' for help with a specific command."
 goto Main
 
 :: setup workspace
-echo Enter the workspace directory. Usage: C:\MyWorkspaceDirectory
-set /p workspaceroot="Workspace Directory: "
-goto Index
+REM echo Enter the workspace directory. Usage: C:\MyWorkspaceDirectory
+REM set /p workspaceroot="Workspace Directory: "
+REM goto Index
 
 
 
@@ -57,6 +59,7 @@ goto Index
 		)
 		goto Help%command1%
 	)
+	:: If the user's command doesn't match up with any existing commands, throw an error.
 	if /I "%command0%"=="Capture" (
 	    goto Capture
     )
@@ -75,13 +78,10 @@ goto Index
 :Capture
 	::Set high-performance power scheme to speed deployment
 	if /I "%command3%"=="/h" (call powercfg /s 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c)
-
-	::M80b80, you really ought to have kept those checks in here... all hell will break if you try and fire this off wrong.
-
-	dism /Capture-Image /ImageFile:%workspaceroot%\%command2%.wim /CaptureDir:%command1%\ /Name:%command2% /Compress:max /CheckIntegrity /Verify
-
+	dism /Capture-Image /ImageFile:"%~dp0/Images/%command2%.wim" /CaptureDir:%command1%\ /Name:%command2% /Compress:max /CheckIntegrity
 	goto Main
 
+:: Still Probably Broken
 :Build
 	for %%i in (%command%) do (
 		if /I not "%%i"=="%command0%" if /I not "%%i"=="%command1%" (
@@ -105,28 +105,29 @@ goto Index
 
 goto Main
 
-
+:: Finished! Need to test!
 :Export
 	echo "Beginning to export to drive: %command1%"
 	copy "%~dp0/Builds/%command2%.esd" "%command1%\sources\install.esd" /Y /B
     echo "Export complete, install.esd was replaced!"
 goto Main
 
-:Index
-	set imagecount=0
-	set buildcount=0
-	mkdir %workspaceroot%
-
-	for /R "%workspaceroot%\" %%g in (*.wim) do (
-        set imagenamearray[%imagecount%]=%%g
-        set imagecount+=1
-	)
-
-    for /R "%workspaceroot%\" %%g in (*.esd) do (
-        set buildnamearray[%buildcount%]=%%g
-        set buildcount+=1
-    )
-goto Main
+:: Commented out Index Label
+REM :Index
+REM 	set imagecount=0
+REM 	set buildcount=0
+REM 	mkdir %workspaceroot%
+REM
+REM 	for /R "%workspaceroot%\" %%g in (*.wim) do (
+REM         set imagenamearray[%imagecount%]=%%g
+REM         set imagecount+=1
+REM 	)
+REM
+REM     for /R "%workspaceroot%\" %%g in (*.esd) do (
+REM         set buildnamearray[%buildcount%]=%%g
+REM         set buildcount+=1
+REM     )
+REM goto Main
 
 ::Setup Help
 :Help
