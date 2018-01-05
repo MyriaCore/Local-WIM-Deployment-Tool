@@ -1,6 +1,16 @@
 @echo off
 setlocal enabledelayedexpansion
 
+:: DISM DOCS ===
+:: DISM Main - https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/dism-image-management-command-line-options-s14
+:: DISM /Capture-Image - https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/dism-image-management-command-line-options-s14#capture-image
+:: DISM /Export-Image - https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/dism-image-management-command-line-options-s14#export-image
+:: DISM /Apply-Image - https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/dism-image-management-command-line-options-s14#apply-image
+:: DISM /Append-Image - https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/dism-image-management-command-line-options-s14#append-image
+:: DISM /Mount-Image - https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/dism-image-management-command-line-options-s14#mount-image
+:: DISM /Commit-Image - https://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/dism-image-management-command-line-options-s14#commit-image
+
+
 ::TODO =============
 ::Info:
 ::Figure out how to make a wim into esd(need export?)
