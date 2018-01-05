@@ -19,9 +19,7 @@ setlocal enabledelayedexpansion
 ::Implementation:
 ::Figure out how to split a string by space, but respect quotes.
 ::(maybe split my quotes then split every other one by spaces?)
-::Finish and Test Build Command (figure out how to use new indexing system)
-::Check To make sure Capture Command works
-::Test Export Command
+:: All functionality Finished! Need to test: Capture, Build, Export
 ::Make Help Commands more clear:
 ::	User may not necessarily know that "Build" == *.esd, and "Image" == *.wim, and that "Volume" == A specific volume pertaining to the Capture Dir, Install Disk Dir, etc.
 ::Rethink Index Label (You seem to have just used the weird dp0 thingy, so I'm just gonna comment out Index and go w/ that)
@@ -75,38 +73,32 @@ REM goto Index
     echo Unknown command. Type 'help' for help.
     goto Main
 
+:: Finished! Need to Test!
 :Capture
 	::Set high-performance power scheme to speed deployment
 	if /I "%command3%"=="/h" (call powercfg /s 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c)
-	dism /Capture-Image /ImageFile:"%~dp0/Images/%command2%.wim" /CaptureDir:%command1%\ /Name:%command2% /Compress:max /CheckIntegrity
+	dism /Capture-Image /ImageFile:"%~dp0/Images/%command2%.wim" /CaptureDir:%command1%\ /Name:%command2% /Compress:recovery /CheckIntegrity
 	goto Main
 
-:: Still Probably Broken
+:: Finished! Need to test!
 :Build
+	:: Looks for /h as last command
 	for %%i in (%command%) do (
-		if /I not "%%i"=="%command0%" if /I not "%%i"=="%command1%" (
-			for %%j in imagenamearray[] do (
-				set name = %%j
-				:: Source: https://stackoverflow.com/questions/7005951/batch-file-find-if-substring-is-in-string-not-in-a-file
-				if not x%name:bcd=%==x%name% echo It contains bcd
-			)
+		if /I "%%i"=="/h" (call powercfg /s 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c)
+	)
+	:: Loops through ImageNames and exports them into a Build with filename BuildName
+	for %%i in (%command%) do (
+		if /I not "%%i"=="%command0%" if /I not "%%i"=="%command1%"(
+			dism /Export-Image /SourceImageFile:"%~dp0/Images/%%i.wim" /DestinationImageFile:"%~dp0/Builds/%command1%.esd" /Compress:recovery /CheckIntegrity
 		)
 	)
-
-	if "%command !count!"
-
-
-	if %count%+1 equ 1 (
-
-		dism /Export-Image /SourceImageFile:                /DestinationImageFile:             /Compress:recovery
-
-
-	)
-
 goto Main
 
 :: Finished! Need to test!
 :Export
+	::Set high-performance power scheme to speed deployment
+	if /I "%command3%"=="/h" (call powercfg /s 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c)
+	
 	echo "Beginning to export to drive: %command1%"
 	copy "%~dp0/Builds/%command2%.esd" "%command1%\sources\install.esd" /Y /B
     echo "Export complete, install.esd was replaced!"
@@ -134,9 +126,9 @@ REM goto Main
 	echo ----------------------------------
 	echo Availible Commands:
 	echo capture [volume] [name] /h      ^| Creates an image.
-	echo build [buildName] [names]...    ^| Builds an ESD.
-	echo export [volume] [buildName]     ^| Exports an ESD to bootable media.
-	echo index                           ^| Re-Indexes the workspace
+	echo build [buildName] [names]... /h ^| Builds an ESD.
+	echo export [volume] [buildName] /h  ^| Exports an ESD to bootable media.
+	REM echo index                           ^| Re-Indexes the workspace
 	echo exit                            ^| Exits the Deployment Tool.
 	echo help [command]                  ^| Shows detailed help.
 	echo ----------------------------------
@@ -158,15 +150,16 @@ goto Main
 	echo Usage: build MyBuild MyFirstImage MySecondImage
 	echo buildName: The name of the build.
 	echo names...: A list of image names to add to the build, or blank to build all.
-	echo /h: Use high performance mode to create the image faster.
+	echo /h: Use high performance mode to build the ESD faster.
 	echo ----------------------------------
 goto Main
 
 :HelpExport
 	echo ----------------------------------
-	echo Command: export [volume] [buildName]
-	echo Usage: export F: MyBuild
+	echo Command: export [volume] [buildName] /h
+	echo Usage: export F: MyBuild /h
 	echo volume: The volume containing bootable media to export to.
 	echo buildName: The name of the build to export.
+	echo /h: Use high performance mode to export the build faster
 	echo ----------------------------------
 goto Main
