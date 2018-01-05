@@ -6,9 +6,15 @@ setlocal enabledelayedexpansion
 ::Figure out how to make a wim into esd(need export?)
 ::Figure out how multiple images work in regard to the windows installer.
 
-::Scripts
+::Implementation:
 ::Figure out how to split a string by space, but respect quotes.
 ::(maybe split my quotes then split every other one by spaces?)
+::Finish the Build Command (figure out how to use new indexing system)
+::Check To make sure Capture Command works
+::Finish the Export Command
+::Review Help Commands to ensure it reflects new commands/arguments
+::Cry because we're using batch
+::Write some nice things in the README.md file :D
 
 
 
@@ -63,7 +69,7 @@ goto Index
 	::M80b80, you really ought to have kept those checks in here... all hell will break if you try and fire this off wrong.
 
 	dism /Capture-Image /ImageFile:%workspaceroot%\%command2%.wim /CaptureDir:%command1%\ /Name:%command2% /Compress:max /CheckIntegrity /Verify
-	
+
 	goto Main
 
 :Build
@@ -76,17 +82,17 @@ goto Index
 			)
 		)
 	)
-	
+
 	if "%command !count!"
-	
-	
+
+
 	if %count%+1 equ 1 (
-		
+
 		dism /Export-Image /SourceImageFile:                /DestinationImageFile:             /Compress:recovery
-		
-		
+
+
 	)
-	
+
 goto Main
 
 
@@ -111,7 +117,6 @@ goto Main
         set buildcount+=1
     )
 goto Main
-::goto :eof should end up *hopefully 
 
 ::Setup Help
 :Help
