@@ -62,10 +62,10 @@ REM goto Index
 	    goto Capture
     )
     if /I "%command0%"=="Build" (
-        goto Capture
+        goto Build
     )
     if /I "%command0%"=="Export" (
-        goto Capture
+        goto Export
     )
     if /I "%command0%"=="Exit" (
         exit /b
@@ -73,34 +73,64 @@ REM goto Index
     echo Unknown command. Type 'help' for help.
     goto Main
 
-:: Finished! Need to Test!
+:: Tested! It Works!
 :Capture
 	::Set high-performance power scheme to speed deployment
 	if /I "%command3%"=="/h" (call powercfg /s 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c)
-	dism /Capture-Image /ImageFile:"%~dp0/Images/%command2%.wim" /CaptureDir:%command1%\ /Name:%command2% /Compress:recovery /CheckIntegrity
-	goto Main
+	:: If Images Folder doesn't exist, create it and continue.
+	if not exist "%~dp0Images" (
+		mkdir "%~dp0Images\"
+	)
+	dism /Capture-Image /ImageFile:"%~dp0Images\%command2%.wim" /CaptureDir:%command1%\ /Name:"%command2%" /Compress:max /CheckIntegrity
 
-:: Finished! Need to test!
+goto Main
+
+:: Need to test!
 :Build
+	:: Debugging Notes =======
+	:: Batch file Can't excecute the final for loop.
+	:: When I isolate the dism command and run that by itself, it throws DISM Error 87.
+	:: This error seems to be for if you make a syntax error in the dism command
+	:: I've searched far and wide, but I cannot find where I have it wrong.
+	:: To test, I've found the dism logs and pulled out what it ended up writing as a dism command.
+	:: Here is what it excecuted as:
+	:: dism  /Export-Image /SourceImageFile:H:\Images\testimage.wim /DestinationImageFile:H:\Builds\testbuild.esd /Compress:recovery /CheckIntegrity
+	:: H: is the drive I have the DeploymentTool.bat on. an Images and Builds foler exists at its root.
+	:: I've fiddled with this specific command in isolation, but it seems that we simply are getting the /Export-Image command wrong somehow.
+	:: I'm leaving a link to my DISM logs if you want to look through them.
+	:: DISM Log: https://goo.gl/xU2dHc (It's a gist)
+
 	:: Looks for /h as last command
 	for %%i in (%command%) do (
 		if /I "%%i"=="/h" (call powercfg /s 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c)
 	)
+
+	:: If Images Folder doesnt exist, throw an error
+	:: If Builds Folder doesn't exist, create it and continue
+	if not exist %~dp0Images (
+		echo "Imgaes folder does not exist!"
+		goto Main
+	)
+	if not exist %~dp0Builds (
+		mkdir %~dp0Builds
+	)
+
 	:: Loops through ImageNames and exports them into a Build with filename BuildName
+	:: Can't get here and instead exits with the message "Syntax is incorrect" or something like that
 	for %%i in (%command%) do (
-		if /I not "%%i"=="%command0%" if /I not "%%i"=="%command1%"(
-			dism /Export-Image /SourceImageFile:"%~dp0/Images/%%i.wim" /DestinationImageFile:"%~dp0/Builds/%command1%.esd" /Compress:recovery /CheckIntegrity
-		)
+		if /I not %%i==%command0% (if /I not %%i==%command1% (
+			dism /Export-Image /SourceImageFile:"%~dp0Images\%%i.wim" /DestinationImageFile:"%~dp0Builds\%command1%.esd" /Compress:recovery /CheckIntegrity
+		) )
 	)
 goto Main
 
-:: Finished! Need to test!
+:: Need to test!
 :Export
 	::Set high-performance power scheme to speed deployment
 	if /I "%command3%"=="/h" (call powercfg /s 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c)
-	
+
 	echo "Beginning to export to drive: %command1%"
-	copy "%~dp0/Builds/%command2%.esd" "%command1%\sources\install.esd" /Y /B
+	copy "%~dp0Builds\%command2%.esd" "%command1%\sources\install.esd" /Y /B
     echo "Export complete, install.esd was replaced!"
 goto Main
 
