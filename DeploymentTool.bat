@@ -70,19 +70,19 @@ REM goto Index
 	)
 	:: If the user's command doesn't match up with any existing commands, throw an error.
 	if /I "%command0%"=="Capture" (
-	    goto Capture
-    )
-    if /I "%command0%"=="Build" (
-        goto Build
-    )
-    if /I "%command0%"=="Export" (
-        goto Export
-    )
-    if /I "%command0%"=="Exit" (
-        exit /b
-    )
-    echo Unknown command. Type 'help' for help.
-    goto Main
+	  goto Capture
+  )
+  if /I "%command0%"=="Build" (
+    goto Build
+  )
+  if /I "%command0%"=="Export" (
+    goto Export
+  )
+	if /I "%command0%"=="Exit" (
+  	exit /b
+  )
+  echo Unknown command. Type 'help' for help.
+goto Main
 
 :: Tested! It Works!
 :Capture
