@@ -139,26 +139,26 @@ REM 	set buildcount=0
 REM 	mkdir %workspaceroot%
 REM
 REM 	for /R "%workspaceroot%\" %%g in (*.wim) do (
-REM         set imagenamearray[%imagecount%]=%%g
-REM         set imagecount+=1
+REM      set imagenamearray[%imagecount%]=%%g
+REM      set imagecount+=1
 REM 	)
 REM
-REM     for /R "%workspaceroot%\" %%g in (*.esd) do (
-REM         set buildnamearray[%buildcount%]=%%g
-REM         set buildcount+=1
-REM     )
+REM  for /R "%workspaceroot%\" %%g in (*.esd) do (
+REM      set buildnamearray[%buildcount%]=%%g
+REM      set buildcount+=1
+REM  )
 REM goto Main
 
 ::Setup Help
 :Help
 	echo ----------------------------------
 	echo Availible Commands:
-	echo capture [volume] [name] /h      ^| Creates an image.
+	echo capture [volume] [name] /h   ^| Creates an image.
 	echo build [buildName] [names]... /h ^| Builds an ESD.
 	echo export [volume] [buildName] /h  ^| Exports an ESD to bootable media.
-	REM echo index                           ^| Re-Indexes the workspace
-	echo exit                            ^| Exits the Deployment Tool.
-	echo help [command]                  ^| Shows detailed help.
+	REM echo index                         ^| Re-Indexes the workspace
+	echo exit                           ^| Exits the Deployment Tool.
+	echo help [command]               ^| Shows detailed help.
 	echo ----------------------------------
 goto Main
 
