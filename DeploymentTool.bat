@@ -97,40 +97,29 @@ goto Main
 :: Need to test!
 :Build
 	:: Debugging Notes =======
-	:: Batch file Can't excecute the final for loop.
+	:: Batch file Can't execute the final for loop.
 	:: When I isolate the dism command and run that by itself, it throws DISM Error 87.
 	:: This error seems to be for if you make a syntax error in the dism command
 	:: I've searched far and wide, but I cannot find where I have it wrong.
 	:: To test, I've found the dism logs and pulled out what it ended up writing as a dism command.
-	:: Here is what it excecuted as:
+	:: Here is what it executed as:
 	:: dism  /Export-Image /SourceImageFile:H:\Images\testimage.wim /DestinationImageFile:H:\Builds\testbuild.esd /Compress:recovery /CheckIntegrity
-	:: H: is the drive I have the DeploymentTool.bat on. an Images and Builds foler exists at its root.
+	:: H: is the drive I have the DeploymentTool.bat on. an Images and Builds folder exists at its root.
 	:: I've fiddled with this specific command in isolation, but it seems that we simply are getting the /Export-Image command wrong somehow.
 	:: I'm leaving a link to my DISM logs if you want to look through them.
 	:: DISM Log: https://goo.gl/xU2dHc (It's a gist)
 
 	:: Looks for /h as last command
-	for %%i in (%command%) do (
-		if /I "%%i"=="/h" (call powercfg /s 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c)
-	)
+		if /I "%command4%"=="/h" (call powercfg /s 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c)
 
-	:: If Images Folder doesnt exist, throw an error
+	:: If Images Folder doesn't exist, throw an error
 	:: If Builds Folder doesn't exist, create it and continue
-	if not exist %~dp0Images (
-		echo "Imgaes folder does not exist!"
-		goto Main
-	)
-	if not exist %~dp0Builds (
-		mkdir %~dp0Builds
-	)
+	mkdir %~dp0Builds
 
 	:: Loops through ImageNames and exports them into a Build with filename BuildName
 	:: Can't get here and instead exits with the message "Syntax is incorrect" or something like that
-	for %%i in (%command%) do (
-		if /I not %%i==%command0% (if /I not %%i==%command1% (
-			dism /Export-Image /SourceImageFile:"%~dp0Images\%%i.wim" /DestinationImageFile:"%~dp0Builds\%command1%.esd" /Compress:recovery /CheckIntegrity
-		) )
-	)
+    dism /Export-Image /SourceImageFile:"%~dp0Images\%%i.wim" /DestinationImageFile:"%~dp0Builds\%command1%.esd" /Compress:recovery /CheckIntegrity
+
 goto Main
 
 :: Need to test!
