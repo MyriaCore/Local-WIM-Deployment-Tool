@@ -1,3 +1,14 @@
+
+:: Copyright 2018 Jonathan Zarnstorff
+:: <p>
+:: Licensed under the Apache License, Version 2.0 (the "License");
+:: you may not use this file except in compliance with the License.
+:: You may obtain a copy of the License at
+:: <p>
+:: http://www.apache.org/licenses/LICENSE-2.0
+:: <p>
+:: Unless required by applicable law or agreed to in writing, software
+
 @echo off
 setlocal enabledelayedexpansion
 
@@ -78,9 +89,7 @@ REM goto Index
 	::Set high-performance power scheme to speed deployment
 	if /I "%command3%"=="/h" (call powercfg /s 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c)
 	:: If Images Folder doesn't exist, create it and continue.
-	if not exist "%~dp0Images" (
-		mkdir "%~dp0Images\"
-	)
+	mkdir "%~dp0Images"
 	dism /Capture-Image /ImageFile:"%~dp0Images\%command2%.wim" /CaptureDir:%command1%\ /Name:"%command2%" /Compress:max /CheckIntegrity
 
 goto Main
