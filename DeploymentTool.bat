@@ -110,7 +110,7 @@ goto Main
 	:: DISM Log: https://goo.gl/xU2dHc (It's a gist)
 
 	:: Looks for /h as last command
-		if /I "%command4%"=="/h" (call powercfg /s 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c)
+	if /I "%command4%"=="/h" (call powercfg /s 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c)
 
 	:: If Images Folder doesn't exist, throw an error
 	:: If Builds Folder doesn't exist, create it and continue
