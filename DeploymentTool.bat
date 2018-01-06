@@ -51,13 +51,6 @@ if not exist "Images" (
 )
 goto Main
 
-:: setup workspace
-REM echo Enter the workspace directory. Usage: C:\MyWorkspaceDirectory
-REM set /p workspaceroot="Workspace Directory: "
-REM goto Index
-
-
-
 ::Setup Main Loop
 :Main
 	set /p command="Deployment Tool> "
